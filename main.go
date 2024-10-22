@@ -64,7 +64,7 @@ var (
 )
 
 func init() {
-	prometheus.MustRegister(versioncollector.NewCollector("blackbox_exporter"))
+	prometheus.MustRegister(versioncollector.NewCollector("fluent_forward_blackbox_exporter"))
 }
 
 func main() {
@@ -75,7 +75,7 @@ func run() int {
 	kingpin.CommandLine.UsageWriter(os.Stdout)
 	promlogConfig := &promlog.Config{}
 	flag.AddFlags(kingpin.CommandLine, promlogConfig)
-	kingpin.Version(version.Print("blackbox_exporter"))
+	kingpin.Version(version.Print("fluent_forward_blackbox_exporter"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 	logger := promlog.New(promlogConfig)
@@ -84,7 +84,7 @@ func run() int {
 	logLevelProberValue, _ := level.Parse(*logLevelProber)
 	logLevelProber := level.Allow(logLevelProberValue)
 
-	level.Info(logger).Log("msg", "Starting blackbox_exporter", "version", version.Info())
+	level.Info(logger).Log("msg", "Starting fluent_forward_blackbox_exporter", "version", version.Info())
 	level.Info(logger).Log("build_context", version.BuildContext())
 
 	if err := sc.ReloadConfig(*configFile, logger); err != nil {
