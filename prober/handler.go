@@ -33,13 +33,7 @@ import (
 )
 
 var (
-	Probers = map[string]ProbeFn{
-		"http": ProbeHTTP,
-		"tcp":  ProbeTCP,
-		"icmp": ProbeICMP,
-		"dns":  ProbeDNS,
-		"grpc": ProbeGRPC,
-	}
+	Probers = map[string]ProbeFn{}
 )
 
 func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger log.Logger, rh *ResultHistory, timeoutOffset float64, params url.Values,
