@@ -1,4 +1,5 @@
 // Copyright 2016 The Prometheus Authors
+// (Cut down / modified for Fluent Forward by Stewart Webb (swebb.id.au))
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
