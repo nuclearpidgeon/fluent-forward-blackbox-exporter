@@ -33,7 +33,9 @@ import (
 )
 
 var (
-	Probers = map[string]ProbeFn{}
+	Probers = map[string]ProbeFn{
+		"forward": ProbeFluentForward,
+	}
 )
 
 func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger log.Logger, rh *ResultHistory, timeoutOffset float64, params url.Values,
