@@ -19,6 +19,37 @@ import (
 	"encoding/hex"
 	"strings"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+)
+
+const (
+	helpSSLEarliestCertExpiry     = "Returns last SSL chain expiry in unixtime"
+	helpSSLChainExpiryInTimeStamp = "Returns last SSL chain expiry in timestamp"
+	helpProbeTLSInfo              = "Returns the TLS version used or NaN when unknown"
+	helpProbeTLSCipher            = "Returns the TLS cipher negotiated during handshake"
+)
+
+var (
+	sslEarliestCertExpiryGaugeOpts = prometheus.GaugeOpts{
+		Name: "probe_ssl_earliest_cert_expiry",
+		Help: helpSSLEarliestCertExpiry,
+	}
+
+	sslChainExpiryInTimeStampGaugeOpts = prometheus.GaugeOpts{
+		Name: "probe_ssl_last_chain_expiry_timestamp_seconds",
+		Help: helpSSLChainExpiryInTimeStamp,
+	}
+
+	probeTLSInfoGaugeOpts = prometheus.GaugeOpts{
+		Name: "probe_tls_version_info",
+		Help: helpProbeTLSInfo,
+	}
+
+	probeTLSCipherGaugeOpts = prometheus.GaugeOpts{
+		Name: "probe_tls_cipher_info",
+		Help: helpProbeTLSCipher,
+	}
 )
 
 func getEarliestCertExpiry(state *tls.ConnectionState) time.Time {
