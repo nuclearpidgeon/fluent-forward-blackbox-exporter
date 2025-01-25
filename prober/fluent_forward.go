@@ -18,7 +18,9 @@ package prober
 import (
 	"bufio"
 	"context"
+	"crypto/rand"
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"time"
@@ -91,7 +93,6 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 	// Fluentbit's forward plugin sends messages in the following form, which
 	// appears to be "Forward Mode" of the Forward protocol:
 	// ["exampletag",[[1728021644, {}]],{"chunk":"p8n9gmxTQVC8/nh2wlKKeQ=="}]
-	chunkDelimiterBase64 := "p8n9gmxTQVC8/nh2wlKKeQ=="
 	timestamp := time.Now()
 	// Start the 3-elem array that the message form takes
 	msgWriter.EncodeArrayLen(3)
@@ -129,8 +130,17 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 	// "Clients MAY send the `chunk`` option to confirm the server receives
 	// event records. The value is a string of Base64 representation of 128
 	// bits unique_id which is an ID of a set of events."
+	unique_id_bytes := make([]byte, 16)
+	_, err = rand.Read(unique_id_bytes)
+	if err != nil {
+		level.Error(logger).Log("msg", "Error getting random number for Forward message chunk option", "err", err)
+		return false
+	}
+	chunkValBase64 := base64.StdEncoding.EncodeToString(unique_id_bytes)
 	msgWriter.EncodeString("chunk")
-	msgWriter.EncodeString(chunkDelimiterBase64)
+	msgWriter.EncodeString(chunkValBase64)
+
+	level.Debug(logger).Log("msg", "Forward message sent to server", "chunk", chunkValBase64)
 
 	// Message sent - now wait for the ack
 	foundAck := false
@@ -183,7 +193,7 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 		}
 		if mapKey == "ack" {
 			foundAck = true
-			if mapVal == chunkDelimiterBase64 {
+			if mapVal == chunkValBase64 {
 				foundMatchingAck = true
 				break
 			}
