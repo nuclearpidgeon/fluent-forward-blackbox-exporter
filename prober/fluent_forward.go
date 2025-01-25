@@ -169,16 +169,16 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 		return false
 	}
 
-	resp_i := 0
-	for ; resp_i < respMapLen; resp_i++ {
+	resp_map_i := 0
+	for ; resp_map_i < respMapLen; resp_map_i++ {
 		mapKey, err := mpDecoder.DecodeString()
 		if err != nil {
-			level.Error(logger).Log("msg", fmt.Sprintf("Error decoding Forward response map - failed to decode key at map index %d", resp_i), "err", err)
+			level.Error(logger).Log("msg", fmt.Sprintf("Error decoding Forward response map - failed to decode key at map index %d", resp_map_i), "err", err)
 			return false
 		}
 		mapVal, err := mpDecoder.DecodeInterface()
 		if err != nil {
-			level.Error(logger).Log("msg", fmt.Sprintf("Error decoding Forward response map - failed to decode value at map index %d", resp_i), "err", err)
+			level.Error(logger).Log("msg", fmt.Sprintf("Error decoding Forward response map - failed to decode value at map index %d", resp_map_i), "err", err)
 			return false
 		}
 		if mapKey == "ack" {
