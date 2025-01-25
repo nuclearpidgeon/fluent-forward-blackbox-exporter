@@ -196,6 +196,8 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 			if mapVal == chunkValBase64 {
 				foundMatchingAck = true
 				break
+			} else {
+				level.Error(logger).Log("msg", fmt.Sprintf("Server returned non-matching chunk??? (ack key at map index %d)", resp_map_i), "sentChunk", chunkValBase64, "receivedChunk", mapVal)
 			}
 		} else {
 			level.Error(logger).Log("msg", "Skipped non-matching response key %s")
