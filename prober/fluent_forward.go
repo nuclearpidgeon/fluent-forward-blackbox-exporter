@@ -194,6 +194,7 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 		if mapKey == "ack" {
 			foundAck = true
 			if mapVal == chunkValBase64 {
+				level.Debug(logger).Log("msg", fmt.Sprintf("Matching ack chunk string found (at map index %d)", resp_map_i), "chunk", mapVal)
 				foundMatchingAck = true
 				break
 			} else {
