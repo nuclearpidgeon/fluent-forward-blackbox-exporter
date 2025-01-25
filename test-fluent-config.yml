@@ -1,0 +1,4 @@
+modules:
+  fluent_forward_test:
+    prober: forward
+    timeout: 5s
