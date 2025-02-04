@@ -30,6 +30,8 @@ import (
 )
 
 var (
+	// Config types have static defaults that are copied then overwritten by
+	// any parsed real config
 
 	DefaultModule = Module{
 	}
@@ -149,8 +151,8 @@ type Module struct {
 }
 
 
+// UnmarshalYAML funcs implement the yaml.Unmarshaler interface.
 
-// UnmarshalYAML implements the yaml.Unmarshaler interface.
 func (s *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type plain Config
 	if err := unmarshal((*plain)(s)); err != nil {
@@ -159,7 +161,6 @@ func (s *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// UnmarshalYAML implements the yaml.Unmarshaler interface.
 func (s *Module) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	*s = DefaultModule
 	type plain Module
