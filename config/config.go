@@ -34,8 +34,12 @@ var (
 	// any parsed real config
 
 	DefaultModule = Module{
+		FluentForward: DefaultFluentForwardProbe,
 	}
 
+	DefaultFluentForwardProbe = FluentForwardProbe{
+		Tag: "probemsg",
+	}
 )
 
 type Config struct {
@@ -148,8 +152,17 @@ func MustNewRegexp(s string) Regexp {
 type Module struct {
 	Prober        string             `yaml:"prober,omitempty"`
 	Timeout       time.Duration      `yaml:"timeout,omitempty"`
+	FluentForward FluentForwardProbe `yaml:"fluentforward,omitempty"`
 }
 
+type FluentForwardProbe struct {
+	// IPProtocol         string           `yaml:"preferred_ip_protocol,omitempty"`
+	// IPProtocolFallback bool             `yaml:"ip_protocol_fallback,omitempty"`
+	// SourceIPAddress    string           `yaml:"source_ip_address,omitempty"`
+	Tag       string           `yaml:"tag,omitempty"`
+	TLS       bool             `yaml:"tls,omitempty"`
+	TLSConfig config.TLSConfig `yaml:"tls_config,omitempty"`
+}
 
 // UnmarshalYAML funcs implement the yaml.Unmarshaler interface.
 
@@ -170,3 +183,16 @@ func (s *Module) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+func (s *FluentForwardProbe) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	*s = DefaultFluentForwardProbe
+	type plain FluentForwardProbe
+	if err := unmarshal((*plain)(s)); err != nil {
+		return err
+	}
+
+	if s.Tag == "" {
+		return errors.New("non-empty Fluent tag must be set for Fluent Forward module")
+	}
+
+	return nil
+}
