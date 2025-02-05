@@ -26,7 +26,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/prometheus/common/config"
+	promconfig "github.com/prometheus/common/config"
 )
 
 var (
@@ -159,9 +159,9 @@ type FluentForwardProbe struct {
 	// IPProtocol         string           `yaml:"preferred_ip_protocol,omitempty"`
 	// IPProtocolFallback bool             `yaml:"ip_protocol_fallback,omitempty"`
 	// SourceIPAddress    string           `yaml:"source_ip_address,omitempty"`
-	Tag       string           `yaml:"tag,omitempty"`
-	TLS       bool             `yaml:"tls,omitempty"`
-	TLSConfig config.TLSConfig `yaml:"tls_config,omitempty"`
+	Tag       string               `yaml:"tag,omitempty"`
+	TLS       bool                 `yaml:"tls,omitempty"`
+	TLSConfig promconfig.TLSConfig `yaml:"tls_config,omitempty"`
 }
 
 // UnmarshalYAML funcs implement the yaml.Unmarshaler interface.
