@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/textproto"
 	"net/url"
 	"strconv"
 	"time"
@@ -92,13 +91,6 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger lo
 	}
 
 	hostname := params.Get("hostname")
-	if module.Prober == "http" && hostname != "" {
-		err = setHTTPHost(hostname, &module)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-	}
 
 	if module.Prober == "fluent_forward" && hostname != "" {
 		if module.FluentForward.TLSConfig.ServerName == "" {
@@ -134,23 +126,6 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger lo
 
 	h := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
 	h.ServeHTTP(w, r)
-}
-
-func setHTTPHost(hostname string, module *config.Module) error {
-	// By creating a new hashmap and copying values there we
-	// ensure that the initial configuration remain intact.
-	headers := make(map[string]string)
-	if module.HTTP.Headers != nil {
-		for name, value := range module.HTTP.Headers {
-			if textproto.CanonicalMIMEHeaderKey(name) == "Host" && value != hostname {
-				return fmt.Errorf("host header defined both in module configuration (%s) and with URL-parameter 'hostname' (%s)", value, hostname)
-			}
-			headers[name] = value
-		}
-	}
-	headers["Host"] = hostname
-	module.HTTP.Headers = headers
-	return nil
 }
 
 type scrapeLogger struct {
