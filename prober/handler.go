@@ -18,18 +18,18 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/textproto"
 	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/prometheus/blackbox_exporter/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/expfmt"
 	"gopkg.in/yaml.v2"
+
+	"fluent-forward-blackbox-exporter/config"
 )
 
 var (
@@ -91,17 +91,10 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger lo
 	}
 
 	hostname := params.Get("hostname")
-	if module.Prober == "http" && hostname != "" {
-		err = setHTTPHost(hostname, &module)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-	}
 
-	if module.Prober == "tcp" && hostname != "" {
-		if module.TCP.TLSConfig.ServerName == "" {
-			module.TCP.TLSConfig.ServerName = hostname
+	if module.Prober == "fluent_forward" && hostname != "" {
+		if module.FluentForward.TLSConfig.ServerName == "" {
+			module.FluentForward.TLSConfig.ServerName = hostname
 		}
 	}
 
@@ -133,23 +126,6 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger lo
 
 	h := promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
 	h.ServeHTTP(w, r)
-}
-
-func setHTTPHost(hostname string, module *config.Module) error {
-	// By creating a new hashmap and copying values there we
-	// ensure that the initial configuration remain intact.
-	headers := make(map[string]string)
-	if module.HTTP.Headers != nil {
-		for name, value := range module.HTTP.Headers {
-			if textproto.CanonicalMIMEHeaderKey(name) == "Host" && value != hostname {
-				return fmt.Errorf("host header defined both in module configuration (%s) and with URL-parameter 'hostname' (%s)", value, hostname)
-			}
-			headers[name] = value
-		}
-	}
-	headers["Host"] = hostname
-	module.HTTP.Headers = headers
-	return nil
 }
 
 type scrapeLogger struct {

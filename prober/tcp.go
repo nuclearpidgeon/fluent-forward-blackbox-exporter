@@ -25,11 +25,9 @@ import (
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 	pconfig "github.com/prometheus/common/config"
-
-	"github.com/prometheus/blackbox_exporter/config"
 )
 
-func dialTCP(ctx context.Context, target string, module config.Module, registry *prometheus.Registry, logger log.Logger) (net.Conn, error) {
+func dialTCP(ctx context.Context, target string, ipProtocol string, ipProtocolFallback bool, sourceIPAddress string, useTLS bool, promTlsConfig *pconfig.TLSConfig, registry *prometheus.Registry, logger log.Logger) (net.Conn, error) {
 	var dialProtocol, dialTarget string
 	dialer := &net.Dialer{}
 	targetAddress, port, err := net.SplitHostPort(target)
@@ -38,7 +36,7 @@ func dialTCP(ctx context.Context, target string, module config.Module, registry 
 		return nil, err
 	}
 
-	ip, _, err := chooseProtocol(ctx, module.TCP.IPProtocol, module.TCP.IPProtocolFallback, targetAddress, registry, logger)
+	ip, _, err := chooseProtocol(ctx, ipProtocol, ipProtocolFallback, targetAddress, registry, logger)
 	if err != nil {
 		level.Error(logger).Log("msg", "Error resolving address", "err", err)
 		return nil, err
@@ -50,11 +48,11 @@ func dialTCP(ctx context.Context, target string, module config.Module, registry 
 		dialProtocol = "tcp4"
 	}
 
-	if len(module.TCP.SourceIPAddress) > 0 {
-		srcIP := net.ParseIP(module.TCP.SourceIPAddress)
+	if len(sourceIPAddress) > 0 {
+		srcIP := net.ParseIP(sourceIPAddress)
 		if srcIP == nil {
-			level.Error(logger).Log("msg", "Error parsing source ip address", "srcIP", module.TCP.SourceIPAddress)
-			return nil, fmt.Errorf("error parsing source ip address: %s", module.TCP.SourceIPAddress)
+			level.Error(logger).Log("msg", "Error parsing source ip address", "srcIP", sourceIPAddress)
+			return nil, fmt.Errorf("error parsing source ip address: %s", sourceIPAddress)
 		}
 		level.Info(logger).Log("msg", "Using local address", "srcIP", srcIP)
 		dialer.LocalAddr = &net.TCPAddr{IP: srcIP}
@@ -62,11 +60,11 @@ func dialTCP(ctx context.Context, target string, module config.Module, registry 
 
 	dialTarget = net.JoinHostPort(ip.String(), port)
 
-	if !module.TCP.TLS {
+	if !useTLS {
 		level.Info(logger).Log("msg", "Dialing TCP without TLS")
 		return dialer.DialContext(ctx, dialProtocol, dialTarget)
 	}
-	tlsConfig, err := pconfig.NewTLSConfig(&module.TCP.TLSConfig)
+	tlsConfig, err := pconfig.NewTLSConfig(promTlsConfig)
 	if err != nil {
 		level.Error(logger).Log("msg", "Error creating TLS configuration", "err", err)
 		return nil, err

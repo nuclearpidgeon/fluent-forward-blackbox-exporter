@@ -29,7 +29,8 @@ import (
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/prometheus/blackbox_exporter/config"
+	"fluent-forward-blackbox-exporter/config"
+
 	"github.com/vmihailenco/msgpack/v5"
 	"github.com/vmihailenco/msgpack/v5/msgpcode"
 )
@@ -64,7 +65,7 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 	// registry.MustRegister(probeFailedDueToRegex)
 	deadline, _ := ctx.Deadline()
 
-	conn, err := dialTCP(ctx, target, module, registry, logger)
+	conn, err := dialTCP(ctx, target, module.FluentForward.IPProtocol, module.FluentForward.IPProtocolFallback, module.FluentForward.SourceIPAddress, module.FluentForward.TLS, &module.FluentForward.TLSConfig, registry, logger)
 	if err != nil {
 		level.Error(logger).Log("msg", "Error dialing TCP", "err", err)
 		return false
@@ -79,7 +80,7 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 		level.Error(logger).Log("msg", "Error setting deadline", "err", err)
 		return false
 	}
-	if module.TCP.TLS {
+	if module.FluentForward.TLS {
 		state := conn.(*tls.Conn).ConnectionState()
 		registry.MustRegister(probeSSLEarliestCertExpiry, probeTLSVersion, probeSSLLastChainExpiryTimestampSeconds, probeSSLLastInformation)
 		probeSSLEarliestCertExpiry.Set(float64(getEarliestCertExpiry(&state).Unix()))
