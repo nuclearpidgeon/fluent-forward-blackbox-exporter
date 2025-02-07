@@ -1,4 +1,6 @@
-// Copyright 2016 The Prometheus Authors
+// Copyright 2025 Stewart Webb (swebb.id.au)
+// Adapted from config/config.go in blackbox_exporter, Copyright 2016 The
+// Prometheus Authors
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
