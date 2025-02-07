@@ -100,9 +100,9 @@ func Handler(w http.ResponseWriter, r *http.Request, c *config.Config, logger lo
 		}
 	}
 
-	if module.Prober == "tcp" && hostname != "" {
-		if module.TCP.TLSConfig.ServerName == "" {
-			module.TCP.TLSConfig.ServerName = hostname
+	if module.Prober == "fluent_forward" && hostname != "" {
+		if module.FluentForward.TLSConfig.ServerName == "" {
+			module.FluentForward.TLSConfig.ServerName = hostname
 		}
 	}
 
