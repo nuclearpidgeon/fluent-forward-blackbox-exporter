@@ -40,7 +40,7 @@ var (
 	}
 
 	DefaultFluentForwardProbe = FluentForwardProbe{
-		Tag:                "probemsg",
+		Tag:                "blackboxprobemsg",
 		IPProtocolFallback: true,
 	}
 )

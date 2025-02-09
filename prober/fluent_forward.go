@@ -98,7 +98,7 @@ func ProbeFluentForward(ctx context.Context, target string, module config.Module
 	// Start the 3-elem array that the message form takes
 	msgWriter.EncodeArrayLen(3)
 	// message part 1/3: tag
-	msgWriter.EncodeString("probetag")
+	msgWriter.EncodeString(module.FluentForward.Tag)
 
 	// messsage part 2/3: one log message
 	// use 'forward' mode where logs are delivered in an array
