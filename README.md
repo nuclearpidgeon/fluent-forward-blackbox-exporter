@@ -38,3 +38,16 @@ A more useful integration approach might be some kind of more generic byte proto
 The original blackbox_exporter project is Apache 2.0 licensed. I have continued the adoption of this license for this project, however I have marked the Fluent Forward probing code in particular with my own copyright as it is my original work.
 As mentioned above, much of the structure and code of this project is essentially a cut-down copy/fork of the original blackbox_exporter project. I have kept copyright notice on the sections/files written by The Prometheus Authors.
 If you find any issues with the copyright/notices/licensing, feel free to raise a Github issue in regards to them.
+
+## Extra References
+
+* IBM of all entities have written a Go client for fluent forward that is another reference for working with the Forward protocol:
+    * https://github.com/IBM/fluent-forward-go
+    * https://github.com/IBM/fluent-forward-go/blob/main/fluent/protocol/message.go
+* The Fluent org also have a "Fluentd Forwarder" project written in Go, from ~2015
+    * https://github.com/fluent/fluentd-forwarder/
+    * https://github.com/fluent/fluentd-forwarder/blob/master/input.go
+* The prober module code makes use of Go's `Context` interface for managing lifetimes of connection attempts
+    * https://go.dev/blog/context
+* Go module reference
+    * https://go.dev/ref/mod
