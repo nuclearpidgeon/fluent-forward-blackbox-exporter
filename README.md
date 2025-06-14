@@ -39,6 +39,19 @@ The original blackbox_exporter project is Apache 2.0 licensed. I have continued 
 As mentioned above, much of the structure and code of this project is essentially a cut-down copy/fork of the original blackbox_exporter project. I have kept copyright notice on the sections/files written by The Prometheus Authors.
 If you find any issues with the copyright/notices/licensing, feel free to raise a Github issue in regards to them.
 
+## TODOs:
+
+Feasible further steps I can see this project taking:
+
+* Add support and configuration options for all Fluent Forward "event modes"
+    * ~~[Forward mode](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1.5#forward-mode)~~ (already implemented)
+    * [Message mode](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1.5#message-modes)
+    * [PackedForward mode](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1.5#packedforward-mode)
+    * [CompressedPackedForward mode](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1.5#compressedpackedforward-mode)
+    * Explicit config for timestamp as integer v.s. [EventTime](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1.5#eventtime-ext-format) (msgpack extension type for nanosecond precision with raw 2x 32-bit chunks)
+        * it would also be great to document what Fluentbit/Fluentd input plugins (and versions) support what time modes
+* Remove the prober "modules" structure altogether as it only really exists for supporting the varied HTTP/gRPC/TCP probe approached in the original `blackbox_exporter` project
+
 ## Extra References
 
 * IBM of all entities have written a Go client for fluent forward that is another reference for working with the Forward protocol:
